@@ -164,7 +164,15 @@
                             "type": "checkboxTree",
                             "label": "Dimensions",
                             "field": "dimensions",
-                            "required": false,
+                            "help": {
+                                "text": "Select dimensions to group and filter your data.\nDimensions include Auto Attendant and Call Queue fields.\nSee [[dimensions_docs]] for detailed field descriptions.",
+                                "links": [{
+                                    "slug": "dimensions_docs",
+                                    "link": "https://learn.microsoft.com/en-us/microsoftteams/aa-cq-cqd-historical-reports#auto-attendant-dimensions",
+                                    "linkText": "Microsoft Teams VAAC Dimensions Documentation"
+                                }]
+                            },
+                            "required": true,
                             "options": {
                                 "groups": [
                                     {
@@ -332,6 +340,14 @@
                             "type": "checkboxTree",
                             "label": "Measurements",
                             "field": "measurements",
+                            "help": {
+                                "text": "Select measurements (metrics) to retrieve from the VAAC API.\nAt least one measurement must be selected.\nSee [[measurements_docs]] for detailed metric descriptions.",
+                                "links": [{
+                                    "slug": "measurements_docs",
+                                    "link": "https://learn.microsoft.com/en-us/microsoftteams/aa-cq-cqd-historical-reports#measurements",
+                                    "linkText": "Microsoft Teams VAAC Measurements Documentation"
+                                }]
+                            },
                             "required": true,
                             "options": {
                                 "groups": [
