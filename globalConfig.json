@@ -40,17 +40,36 @@
                         },
                         {
                             "type": "text",
-                            "label": "API key",
-                            "field": "api_key",
-                            "help": "API key",
+                            "label": "Email",
+                            "field": "email",
+                            "help": "Email account for authentication",
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "email",
+                                    "errorMsg": "Please enter a valid email address"
+                                },
+                                {
+                                    "type": "string",
+                                    "errorMsg": "Length of email should be between 1 and 200",
+                                    "minLength": 1,
+                                    "maxLength": 200
+                                }
+                            ]
+                        },
+                        {
+                            "type": "text",
+                            "label": "Password",
+                            "field": "password",
+                            "help": "Password for the email account",
                             "required": true,
                             "encrypted": true,
                             "validators": [
                                 {
                                     "type": "string",
-                                    "errorMsg": "Length of API key should be between 1 and 50",
+                                    "errorMsg": "Password is required",
                                     "minLength": 1,
-                                    "maxLength": 50
+                                    "maxLength": 200
                                 }
                             ]
                         }

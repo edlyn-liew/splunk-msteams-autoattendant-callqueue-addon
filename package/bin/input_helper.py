@@ -12,18 +12,28 @@ def logger_for_input(input_name: str) -> logging.Logger:
     return log.Logs().get_logger(f"{ADDON_NAME.lower()}_{input_name}")
 
 
-def get_account_api_key(session_key: str, account_name: str):
+def get_account_credentials(session_key: str, account_name: str):
     cfm = conf_manager.ConfManager(
         session_key,
         ADDON_NAME,
         realm=f"__REST_CREDENTIAL__#{ADDON_NAME}#configs/conf-splunk_msteams_aa_callqueue_reporting_addon_account",
     )
     account_conf_file = cfm.get_conf("splunk_msteams_aa_callqueue_reporting_addon_account")
-    return account_conf_file.get(account_name).get("api_key")
+    account = account_conf_file.get(account_name)
+    return {
+        "email": account.get("email"),
+        "password": account.get("password")
+    }
 
 
-def get_data_from_api(logger: logging.Logger, api_key: str):
+def get_data_from_api(logger: logging.Logger, credentials: dict):
     logger.info("Getting data from an external API")
+    email = credentials.get("email")
+    password = credentials.get("password")
+
+    # TODO: Implement actual API call using email and password for authentication
+    logger.info(f"Authenticating with email: {email}")
+
     dummy_data = [
         {
             "line1": "hello",
@@ -64,8 +74,8 @@ def stream_events(inputs: smi.InputDefinition, event_writer: smi.EventWriter):
             )
             logger.setLevel(log_level)
             log.modular_input_start(logger, normalized_input_name)
-            api_key = get_account_api_key(session_key, input_item.get("account"))
-            data = get_data_from_api(logger, api_key)
+            credentials = get_account_credentials(session_key, input_item.get("account"))
+            data = get_data_from_api(logger, credentials)
             sourcetype = "dummy-data"
             for line in data:
                 event_writer.write_event(
