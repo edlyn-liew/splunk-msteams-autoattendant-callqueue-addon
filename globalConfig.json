@@ -161,26 +161,265 @@
                             ]
                         },
                         {
-                            "type": "textarea",
-                            "label": "JSON Query",
-                            "field": "json_query",
-                            "help": "Contains a Valid JSON query to send to the VAAC API. See https://learn.microsoft.com/en-us/microsoftteams/aa-cq-cqd-historical-reports for JSON object structure",
+                            "type": "checkboxTree",
+                            "label": "Dimensions",
+                            "field": "dimensions",
+                            "required": false,
+                            "options": {
+                                "groups": [
+                                    {
+                                        "label": "Auto Attendant Dimensions",
+                                        "options": {
+                                            "isExpandable": true,
+                                            "expand": true
+                                        },
+                                        "fields": ["AutoAttendantIdentity", "AutoAttendantCallFlow", "AutoAttendantCallResult", "AutoAttendantCallerActionCounts", "AutoAttendantChainDurationInSecs", "AutoAttendantChainIndex", "AutoAttendantChainStartTime", "AutoAttendantCount", "AutoAttendantDirectorySearchMethod", "AutoAttendantId", "AutoAttendantTransferAction", "HasAA"]
+                                    },
+                                    {
+                                        "label": "Call Queue Dimensions",
+                                        "options": {
+                                            "isExpandable": true,
+                                            "expand": true
+                                        },
+                                        "fields": ["CallQueueIdentity", "CallQueueAgentCount", "CallQueueAgentOptInCount", "CallQueueCallResult", "CallQueueDurationSeconds", "CallQueueFinalStateAction", "CallQueueId", "CallQueueTargetType", "HasCQ", "TransferredFromCQId", "TransferredFromCallQueueIdentity"]
+                                    }
+                                ],
+                                "rows": [
+                                    {
+                                        "field": "AutoAttendantIdentity",
+                                        "checkbox": {
+                                            "label": "AutoAttendantIdentity - Resource account URI",
+                                            "defaultValue": true
+                                        }
+                                    },
+                                    {
+                                        "field": "AutoAttendantCallFlow",
+                                        "checkbox": {
+                                            "label": "AutoAttendantCallFlow - Call flow states"
+                                        }
+                                    },
+                                    {
+                                        "field": "AutoAttendantCallResult",
+                                        "checkbox": {
+                                            "label": "AutoAttendantCallResult - Final call outcomes"
+                                        }
+                                    },
+                                    {
+                                        "field": "AutoAttendantCallerActionCounts",
+                                        "checkbox": {
+                                            "label": "AutoAttendantCallerActionCounts - Number of caller actions"
+                                        }
+                                    },
+                                    {
+                                        "field": "AutoAttendantChainDurationInSecs",
+                                        "checkbox": {
+                                            "label": "AutoAttendantChainDurationInSecs - Call flow duration"
+                                        }
+                                    },
+                                    {
+                                        "field": "AutoAttendantChainIndex",
+                                        "checkbox": {
+                                            "label": "AutoAttendantChainIndex - Call chain segment index"
+                                        }
+                                    },
+                                    {
+                                        "field": "AutoAttendantChainStartTime",
+                                        "checkbox": {
+                                            "label": "AutoAttendantChainStartTime - Call flow start time"
+                                        }
+                                    },
+                                    {
+                                        "field": "AutoAttendantCount",
+                                        "checkbox": {
+                                            "label": "AutoAttendantCount - Number of AAs traversed"
+                                        }
+                                    },
+                                    {
+                                        "field": "AutoAttendantDirectorySearchMethod",
+                                        "checkbox": {
+                                            "label": "AutoAttendantDirectorySearchMethod - Search method"
+                                        }
+                                    },
+                                    {
+                                        "field": "AutoAttendantId",
+                                        "checkbox": {
+                                            "label": "AutoAttendantId - AA GUID"
+                                        }
+                                    },
+                                    {
+                                        "field": "AutoAttendantTransferAction",
+                                        "checkbox": {
+                                            "label": "AutoAttendantTransferAction - Transfer target type"
+                                        }
+                                    },
+                                    {
+                                        "field": "HasAA",
+                                        "checkbox": {
+                                            "label": "HasAA - Is AA involved in call"
+                                        }
+                                    },
+                                    {
+                                        "field": "CallQueueIdentity",
+                                        "checkbox": {
+                                            "label": "CallQueueIdentity - Resource account URI",
+                                            "defaultValue": true
+                                        }
+                                    },
+                                    {
+                                        "field": "CallQueueAgentCount",
+                                        "checkbox": {
+                                            "label": "CallQueueAgentCount - Number of agents in queue"
+                                        }
+                                    },
+                                    {
+                                        "field": "CallQueueAgentOptInCount",
+                                        "checkbox": {
+                                            "label": "CallQueueAgentOptInCount - Number of opted-in agents"
+                                        }
+                                    },
+                                    {
+                                        "field": "CallQueueCallResult",
+                                        "checkbox": {
+                                            "label": "CallQueueCallResult - Final call state"
+                                        }
+                                    },
+                                    {
+                                        "field": "CallQueueDurationSeconds",
+                                        "checkbox": {
+                                            "label": "CallQueueDurationSeconds - Duration in queue"
+                                        }
+                                    },
+                                    {
+                                        "field": "CallQueueFinalStateAction",
+                                        "checkbox": {
+                                            "label": "CallQueueFinalStateAction - Final action"
+                                        }
+                                    },
+                                    {
+                                        "field": "CallQueueId",
+                                        "checkbox": {
+                                            "label": "CallQueueId - Call Queue GUID"
+                                        }
+                                    },
+                                    {
+                                        "field": "CallQueueTargetType",
+                                        "checkbox": {
+                                            "label": "CallQueueTargetType - Call redirection target"
+                                        }
+                                    },
+                                    {
+                                        "field": "HasCQ",
+                                        "checkbox": {
+                                            "label": "HasCQ - Is CQ involved in call"
+                                        }
+                                    },
+                                    {
+                                        "field": "TransferredFromCQId",
+                                        "checkbox": {
+                                            "label": "TransferredFromCQId - Source queue GUID"
+                                        }
+                                    },
+                                    {
+                                        "field": "TransferredFromCallQueueIdentity",
+                                        "checkbox": {
+                                            "label": "TransferredFromCallQueueIdentity - Source queue URI"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "type": "checkboxTree",
+                            "label": "Measurements",
+                            "field": "measurements",
                             "required": true,
                             "options": {
-                                "rowsMin": 3,
-                                "rowsMax": 10
-                            },
+                                "groups": [
+                                    {
+                                        "label": "Auto Attendant Measurements",
+                                        "options": {
+                                            "isExpandable": true,
+                                            "expand": true
+                                        },
+                                        "fields": ["AvgAutoAttendantChainDurationSeconds"]
+                                    },
+                                    {
+                                        "label": "Call Queue Measurements",
+                                        "options": {
+                                            "isExpandable": true,
+                                            "expand": true
+                                        },
+                                        "fields": ["AvgCallDuration", "AvgCallQueueDurationSeconds"]
+                                    },
+                                    {
+                                        "label": "General Measurements",
+                                        "options": {
+                                            "isExpandable": true,
+                                            "expand": true
+                                        },
+                                        "fields": ["PSTNTotalMinutes", "TotalCallCount", "TotalAudioStreamDuration"]
+                                    }
+                                ],
+                                "rows": [
+                                    {
+                                        "field": "AvgAutoAttendantChainDurationSeconds",
+                                        "checkbox": {
+                                            "label": "AvgAutoAttendantChainDurationSeconds - Avg AA call flow duration"
+                                        }
+                                    },
+                                    {
+                                        "field": "AvgCallDuration",
+                                        "checkbox": {
+                                            "label": "AvgCallDuration - Avg total call duration"
+                                        }
+                                    },
+                                    {
+                                        "field": "AvgCallQueueDurationSeconds",
+                                        "checkbox": {
+                                            "label": "AvgCallQueueDurationSeconds - Avg queue duration"
+                                        }
+                                    },
+                                    {
+                                        "field": "PSTNTotalMinutes",
+                                        "checkbox": {
+                                            "label": "PSTNTotalMinutes - Total PSTN call minutes",
+                                            "defaultValue": true
+                                        }
+                                    },
+                                    {
+                                        "field": "TotalCallCount",
+                                        "checkbox": {
+                                            "label": "TotalCallCount - Total number of calls",
+                                            "defaultValue": true
+                                        }
+                                    },
+                                    {
+                                        "field": "TotalAudioStreamDuration",
+                                        "checkbox": {
+                                            "label": "TotalAudioStreamDuration - Total audio stream duration"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "type": "text",
+                            "label": "Limit Result Rows",
+                            "field": "limit_result_rows",
+                            "help": "Maximum number of rows to return (max: 200000)",
+                            "required": false,
+                            "defaultValue": "200000",
                             "validators": [
                                 {
-                                    "type": "string",
-                                    "errorMsg": "JSON query is required",
-                                    "minLength": 1
+                                    "type": "number",
+                                    "range": [1, 200000],
+                                    "errorMsg": "Must be a number between 1 and 200000"
                                 }
                             ]
                         }
                     ],
-                    "inputHelperModule": "input_helper",
-                    "title": "VAAC Analytics"
+                    "title": "VAAC Analytics",
+                    "inputHelperModule": "input_helper"
                 }
             ],
             "title": "Inputs",
@@ -244,9 +483,9 @@
     "meta": {
         "name": "splunk_msteams_aa_callqueue_reporting_addon",
         "restRoot": "splunk_msteams_aa_callqueue_reporting_addon",
-        "version": "0.0.1",
+        "version": "1.0.1",
         "displayName": "MSTeams Auto Attendant and Call Queue Reporting Add-on for Splunk",
-        "schemaVersion": "0.0.8",
+        "schemaVersion": "0.0.10",
         "supportedThemes": [
             "light",
             "dark"
