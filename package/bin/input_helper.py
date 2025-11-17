@@ -145,6 +145,69 @@ def get_vaac_analytics(logger: logging.Logger, credentials: dict, json_query: st
         raise
 
 
+def construct_vaac_query(logger: logging.Logger, input_item: dict):
+    """
+    Construct VAAC JSON query from structured input fields.
+
+    Args:
+        logger: Logger instance
+        input_item: Dictionary containing input configuration
+
+    Returns:
+        JSON string ready for VAAC API
+    """
+    from datetime import datetime, timedelta
+
+    query = {}
+
+    # Handle Dimensions
+    dimensions_str = input_item.get("dimensions", "")
+    if dimensions_str:
+        dimensions_list = [d.strip() for d in dimensions_str.split(",") if d.strip()]
+        query["Dimensions"] = [{"DataModelName": dim} for dim in dimensions_list]
+    else:
+        query["Dimensions"] = []
+
+    # Handle Measurements (required)
+    measurements_str = input_item.get("measurements", "")
+    if not measurements_str:
+        raise ValueError("At least one measurement must be selected")
+
+    measurements_list = [m.strip() for m in measurements_str.split(",") if m.strip()]
+    query["Measurements"] = [{"DataModelName": m} for m in measurements_list]
+
+    # Handle Date Filters - always use interval-based mode
+    interval_seconds = int(input_item.get("interval", 3600))
+    end_date = datetime.utcnow().strftime("%Y-%m-%d")
+    start_date = (datetime.utcnow() - timedelta(seconds=interval_seconds)).strftime("%Y-%m-%d")
+
+    logger.info(f"Using date range: {start_date} to {end_date} (interval: {interval_seconds} seconds)")
+
+    query["Filters"] = [
+        {
+            "DataModelName": "Date",
+            "Value": start_date,
+            "Operand": 4  # Greater than or equal
+        },
+        {
+            "DataModelName": "Date",
+            "Value": end_date,
+            "Operand": 6  # Less than or equal
+        }
+    ]
+
+    # Handle LimitResultRowsCount
+    limit = input_item.get("limit_result_rows", "200000")
+    query["LimitResultRowsCount"] = int(limit)
+
+    # Add Parameters
+    query["Parameters"] = {
+        "UserAgent": "Splunk Add-on for MS Teams AA/CQ Reporting"
+    }
+
+    return json.dumps(query)
+
+
 def validate_input(definition: smi.ValidationDefinition):
     return
 
@@ -179,10 +242,10 @@ def stream_events(inputs: smi.InputDefinition, event_writer: smi.EventWriter):
             # Get account credentials
             credentials = get_account_credentials(session_key, input_item.get("account"))
 
-            # Get JSON query and validate
-            json_query = input_item.get("json_query")
-            if not json_query:
-                raise ValueError("JSON query is required for VAAC Analytics input")
+            # Construct JSON query from structured fields
+            logger.info("Constructing VAAC query from input fields")
+            json_query = construct_vaac_query(logger, input_item)
+            logger.debug(f"Constructed query: {json_query}")
 
             # Fetch VAAC Analytics data
             logger.info("Processing VAAC Analytics input")
