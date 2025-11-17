@@ -161,20 +161,18 @@
                             ]
                         },
                         {
-                            "field": "example_help_link",
-                            "label": "",
+                            "field": "vaac_dimensions_doc_help_link",
+                            "label": "Dimension Help Link",
                             "type": "helpLink",
                             "options": {
                                 "text": "Microsoft Teams VAAC Dimensions Documentation",
                                 "link": "https://learn.microsoft.com/en-us/microsoftteams/aa-cq-cqd-historical-reports#auto-attendant-dimensions"
                             }
                         },
-              
                         {
                             "type": "checkboxTree",
                             "label": "Dimensions",
                             "field": "dimensions",
-                           
                             "required": false,
                             "options": {
                                 "groups": [
@@ -364,9 +362,9 @@
                                 ]
                             }
                         },
-          {
-                            "field": "example_help_link",
-                            "label": "",
+                        {
+                            "field": "vaac_measurement_doc_helplink",
+                            "label": "Measurement Help Link",
                             "type": "helpLink",
                             "options": {
                                 "text": "Microsoft Teams VAAC Measurements Documentation",
@@ -377,7 +375,6 @@
                             "type": "checkboxTree",
                             "label": "Measurements",
                             "field": "measurements",
-                            
                             "required": false,
                             "options": {
                                 "groups": [
@@ -541,7 +538,7 @@
     "meta": {
         "name": "splunk_msteams_aa_callqueue_reporting_addon",
         "restRoot": "splunk_msteams_aa_callqueue_reporting_addon",
-        "version": "1.0.1",
+        "version": "1.0.2",
         "displayName": "MSTeams Auto Attendant and Call Queue Reporting Add-on for Splunk",
         "schemaVersion": "0.0.10",
         "supportedThemes": [
