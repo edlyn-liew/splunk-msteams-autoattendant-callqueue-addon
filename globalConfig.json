@@ -72,6 +72,21 @@
                                     "maxLength": 200
                                 }
                             ]
+                        },
+                        {
+                            "type": "text",
+                            "label": "Tenant ID",
+                            "field": "tenant_id",
+                            "help": "Microsoft Azure Tenant ID for OAuth authentication",
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "errorMsg": "Tenant ID is required",
+                                    "minLength": 1,
+                                    "maxLength": 200
+                                }
+                            ]
                         }
                     ],
                     "title": "Accounts"
@@ -86,7 +101,7 @@
         "inputs": {
             "services": [
                 {
-                    "name": "input",
+                    "name": "vaac_analytics",
                     "entity": [
                         {
                             "type": "text",
@@ -116,7 +131,7 @@
                             "options": {
                                 "range": [
                                     10,
-                                    301
+                                    31536000
                                 ]
                             },
                             "help": "Time interval of the data input, in seconds.",
@@ -144,10 +159,28 @@
                                     "maxLength": 100
                                 }
                             ]
+                        },
+                        {
+                            "type": "textarea",
+                            "label": "JSON Query",
+                            "field": "json_query",
+                            "help": "Contains a Valid JSON query to send to the VAAC API. See https://learn.microsoft.com/en-us/microsoftteams/aa-cq-cqd-historical-reports for JSON object structure",
+                            "required": true,
+                            "options": {
+                                "rowsMin": 3,
+                                "rowsMax": 10
+                            },
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "errorMsg": "JSON query is required",
+                                    "minLength": 1
+                                }
+                            ]
                         }
                     ],
                     "inputHelperModule": "input_helper",
-                    "title": "input"
+                    "title": "VAAC Analytics"
                 }
             ],
             "title": "Inputs",
