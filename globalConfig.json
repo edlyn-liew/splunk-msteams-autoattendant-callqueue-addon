@@ -161,35 +161,63 @@
                             ]
                         },
                         {
+                            "field": "example_help_link",
+                            "label": "",
+                            "type": "helpLink",
+                            "options": {
+                                "text": "Microsoft Teams VAAC Dimensions Documentation",
+                                "link": "https://learn.microsoft.com/en-us/microsoftteams/aa-cq-cqd-historical-reports#auto-attendant-dimensions"
+                            }
+                        },
+              
+                        {
                             "type": "checkboxTree",
                             "label": "Dimensions",
                             "field": "dimensions",
-                            "help": {
-                                "text": "Select dimensions to group and filter your data.\nDimensions include Auto Attendant and Call Queue fields.\nSee [[dimensions_docs]] for detailed field descriptions.",
-                                "links": [{
-                                    "slug": "dimensions_docs",
-                                    "link": "https://learn.microsoft.com/en-us/microsoftteams/aa-cq-cqd-historical-reports#auto-attendant-dimensions",
-                                    "linkText": "Microsoft Teams VAAC Dimensions Documentation"
-                                }]
-                            },
-                            "required": true,
+                           
+                            "required": false,
                             "options": {
                                 "groups": [
                                     {
                                         "label": "Auto Attendant Dimensions",
                                         "options": {
                                             "isExpandable": true,
-                                            "expand": true
+                                            "expand": false
                                         },
-                                        "fields": ["AutoAttendantIdentity", "AutoAttendantCallFlow", "AutoAttendantCallResult", "AutoAttendantCallerActionCounts", "AutoAttendantChainDurationInSecs", "AutoAttendantChainIndex", "AutoAttendantChainStartTime", "AutoAttendantCount", "AutoAttendantDirectorySearchMethod", "AutoAttendantId", "AutoAttendantTransferAction", "HasAA"]
+                                        "fields": [
+                                            "AutoAttendantIdentity",
+                                            "AutoAttendantCallFlow",
+                                            "AutoAttendantCallResult",
+                                            "AutoAttendantCallerActionCounts",
+                                            "AutoAttendantChainDurationInSecs",
+                                            "AutoAttendantChainIndex",
+                                            "AutoAttendantChainStartTime",
+                                            "AutoAttendantCount",
+                                            "AutoAttendantDirectorySearchMethod",
+                                            "AutoAttendantId",
+                                            "AutoAttendantTransferAction",
+                                            "HasAA"
+                                        ]
                                     },
                                     {
                                         "label": "Call Queue Dimensions",
                                         "options": {
                                             "isExpandable": true,
-                                            "expand": true
+                                            "expand": false
                                         },
-                                        "fields": ["CallQueueIdentity", "CallQueueAgentCount", "CallQueueAgentOptInCount", "CallQueueCallResult", "CallQueueDurationSeconds", "CallQueueFinalStateAction", "CallQueueId", "CallQueueTargetType", "HasCQ", "TransferredFromCQId", "TransferredFromCallQueueIdentity"]
+                                        "fields": [
+                                            "CallQueueIdentity",
+                                            "CallQueueAgentCount",
+                                            "CallQueueAgentOptInCount",
+                                            "CallQueueCallResult",
+                                            "CallQueueDurationSeconds",
+                                            "CallQueueFinalStateAction",
+                                            "CallQueueId",
+                                            "CallQueueTargetType",
+                                            "HasCQ",
+                                            "TransferredFromCQId",
+                                            "TransferredFromCallQueueIdentity"
+                                        ]
                                     }
                                 ],
                                 "rows": [
@@ -336,44 +364,55 @@
                                 ]
                             }
                         },
+          {
+                            "field": "example_help_link",
+                            "label": "",
+                            "type": "helpLink",
+                            "options": {
+                                "text": "Microsoft Teams VAAC Measurements Documentation",
+                                "link": "https://learn.microsoft.com/en-us/microsoftteams/aa-cq-cqd-historical-reports#measurements"
+                            }
+                        },
                         {
                             "type": "checkboxTree",
                             "label": "Measurements",
                             "field": "measurements",
-                            "help": {
-                                "text": "Select measurements (metrics) to retrieve from the VAAC API.\nAt least one measurement must be selected.\nSee [[measurements_docs]] for detailed metric descriptions.",
-                                "links": [{
-                                    "slug": "measurements_docs",
-                                    "link": "https://learn.microsoft.com/en-us/microsoftteams/aa-cq-cqd-historical-reports#measurements",
-                                    "linkText": "Microsoft Teams VAAC Measurements Documentation"
-                                }]
-                            },
-                            "required": true,
+                            
+                            "required": false,
                             "options": {
                                 "groups": [
                                     {
                                         "label": "Auto Attendant Measurements",
                                         "options": {
                                             "isExpandable": true,
-                                            "expand": true
+                                            "expand": false
                                         },
-                                        "fields": ["AvgAutoAttendantChainDurationSeconds"]
+                                        "fields": [
+                                            "AvgAutoAttendantChainDurationSeconds"
+                                        ]
                                     },
                                     {
                                         "label": "Call Queue Measurements",
                                         "options": {
                                             "isExpandable": true,
-                                            "expand": true
+                                            "expand": false
                                         },
-                                        "fields": ["AvgCallDuration", "AvgCallQueueDurationSeconds"]
+                                        "fields": [
+                                            "AvgCallDuration",
+                                            "AvgCallQueueDurationSeconds"
+                                        ]
                                     },
                                     {
                                         "label": "General Measurements",
                                         "options": {
                                             "isExpandable": true,
-                                            "expand": true
+                                            "expand": false
                                         },
-                                        "fields": ["PSTNTotalMinutes", "TotalCallCount", "TotalAudioStreamDuration"]
+                                        "fields": [
+                                            "PSTNTotalMinutes",
+                                            "TotalCallCount",
+                                            "TotalAudioStreamDuration"
+                                        ]
                                     }
                                 ],
                                 "rows": [
@@ -428,7 +467,10 @@
                             "validators": [
                                 {
                                     "type": "number",
-                                    "range": [1, 200000],
+                                    "range": [
+                                        1,
+                                        200000
+                                    ],
                                     "errorMsg": "Must be a number between 1 and 200000"
                                 }
                             ]
