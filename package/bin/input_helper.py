@@ -50,11 +50,10 @@ def get_oauth_token(logger: logging.Logger, email: str, password: str, tenant_id
 
     payload = {
         "client_id": client_id,
-        "scope": "user_impersonation",
+        "scope": "https://api.interfaces.records.teams.microsoft.com/.default",
         "userName": email,
         "password": password,
-        "grant_type": "password",
-        "resource": "https://api.interfaces.records.teams.microsoft.com"
+        "grant_type": "password"
     }
 
     headers = {
