@@ -7,6 +7,7 @@ import urllib.parse
 import import_declare_test
 import requests
 from solnlib import conf_manager, log
+from solnlib.modular_input import checkpointer
 from splunklib import modularinput as smi
 
 # Import dimension configuration
@@ -152,18 +153,20 @@ def get_vaac_analytics(logger: logging.Logger, credentials: dict, json_query: st
         raise
 
 
-def construct_vaac_query(logger: logging.Logger, input_item: dict):
+def construct_vaac_query(logger: logging.Logger, input_item: dict, checkpoint_helper=None, input_name=None):
     """
     Construct VAAC JSON query from structured input fields.
 
     Args:
         logger: Logger instance
         input_item: Dictionary containing input configuration
+        checkpoint_helper: Checkpoint helper for tracking last processed datetime
+        input_name: Normalized input name for checkpoint key
 
     Returns:
-        JSON string ready for VAAC API
+        tuple: (JSON string ready for VAAC API, end_date_iso for checkpoint)
     """
-    from datetime import datetime, timedelta
+    from datetime import datetime, timedelta, timezone
 
     query = {}
 
@@ -179,12 +182,39 @@ def construct_vaac_query(logger: logging.Logger, input_item: dict):
     measurements_list = get_measurements_for_report_type(report_type, include_optional=False, logger=logger)
     query["Measurements"] = [{"DataModelName": m} for m in measurements_list]
 
-    # Handle Date Filters - always use interval-based mode
-    interval_seconds = int(input_item.get("interval", 3600))
-    end_date = datetime.utcnow().strftime("%Y-%m-%d")
-    start_date = (datetime.utcnow() - timedelta(seconds=interval_seconds)).strftime("%Y-%m-%d")
+    # Handle Date Filters with checkpoint support
+    # Get current time (UTC, timezone-aware)
+    end_date_dt = datetime.now(timezone.utc)
+    end_date = end_date_dt.strftime("%Y-%m-%d")
+    end_date_iso = end_date_dt.isoformat()  # For checkpoint storage
 
-    logger.info(f"Using date range: {start_date} to {end_date} (interval: {interval_seconds} seconds)")
+    # Check for existing checkpoint
+    checkpoint_key = f"{input_name}_last_processed" if input_name else None
+    last_checkpoint = None
+
+    if checkpoint_helper and checkpoint_key:
+        try:
+            checkpoint_data = checkpoint_helper.get(checkpoint_key)
+            if checkpoint_data and "last_datetime" in checkpoint_data:
+                last_checkpoint = checkpoint_data["last_datetime"]
+                logger.info(f"Found checkpoint for '{input_name}': {last_checkpoint}")
+        except Exception as e:
+            logger.warning(f"Failed to retrieve checkpoint for '{input_name}': {str(e)}")
+
+    # Determine start_date
+    if last_checkpoint:
+        # Use checkpoint as start date (incremental mode)
+        start_date_dt = datetime.fromisoformat(last_checkpoint)
+        start_date = start_date_dt.strftime("%Y-%m-%d")
+        logger.info(f"Using checkpoint start date: {start_date} (incremental mode)")
+    else:
+        # Fallback to interval-based (first run or checkpoint failure)
+        interval_seconds = int(input_item.get("interval", 3600))
+        start_date_dt = end_date_dt - timedelta(seconds=interval_seconds)
+        start_date = start_date_dt.strftime("%Y-%m-%d")
+        logger.info(f"No checkpoint found for '{input_name}', using interval-based start date: {start_date} (lookback: {interval_seconds}s)")
+
+    logger.info(f"Query date range: {start_date} to {end_date}")
 
     query["Filters"] = [
         {
@@ -208,7 +238,7 @@ def construct_vaac_query(logger: logging.Logger, input_item: dict):
         "UserAgent": "Splunk Add-on for MS Teams AA/CQ Reporting"
     }
 
-    return json.dumps(query)
+    return json.dumps(query), end_date_iso
 
 
 def validate_input(definition: smi.ValidationDefinition):
@@ -242,13 +272,22 @@ def stream_events(inputs: smi.InputDefinition, event_writer: smi.EventWriter):
             logger.setLevel(log_level)
             log.modular_input_start(logger, normalized_input_name)
 
+            # Initialize checkpoint helper for this input
+            checkpoint_helper = checkpointer.KVStoreCheckpointer(
+                collection_name="splunk_msteams_checkpoints",
+                session_key=session_key,
+                app=ADDON_NAME
+            )
+            logger.debug(f"Initialized checkpoint helper for input: {normalized_input_name}")
+
             # Get account credentials
             credentials = get_account_credentials(session_key, input_item.get("account"))
 
-            # Construct JSON query from structured fields
+            # Construct JSON query from structured fields with checkpoint support
             logger.info("Constructing VAAC query from input fields")
-            json_query = construct_vaac_query(logger, input_item)
+            json_query, end_date_iso = construct_vaac_query(logger, input_item, checkpoint_helper, normalized_input_name)
             logger.debug(f"Constructed query: {json_query}")
+            logger.debug(f"Query end date (for checkpoint): {end_date_iso}")
 
             # Fetch VAAC Analytics data
             logger.info("Processing VAAC Analytics input")
@@ -302,6 +341,23 @@ def stream_events(inputs: smi.InputDefinition, event_writer: smi.EventWriter):
                 input_item.get("index"),
                 account=input_item.get("account"),
             )
+
+            # Update checkpoint after successful data ingestion
+            if checkpoint_helper and normalized_input_name:
+                try:
+                    from datetime import datetime, timezone
+                    checkpoint_key = f"{normalized_input_name}_last_processed"
+                    checkpoint_helper.update(checkpoint_key, {
+                        "last_datetime": end_date_iso,
+                        "processed_records": len(enriched_data),
+                        "updated_at": datetime.now(timezone.utc).isoformat(),
+                        "report_type": report_type
+                    })
+                    logger.info(f"Checkpoint updated for '{normalized_input_name}': last_datetime={end_date_iso}, records={len(enriched_data)}")
+                except Exception as e:
+                    logger.error(f"Failed to update checkpoint for '{normalized_input_name}': {str(e)}")
+                    # Don't fail the input - checkpoint update failure is not critical
+
             log.modular_input_end(logger, normalized_input_name)
         except Exception as e:
             log.log_exception(logger, e, "vaac_analytics_error", msg_before=f"Exception raised while ingesting VAAC analytics data for {normalized_input_name}: ")
