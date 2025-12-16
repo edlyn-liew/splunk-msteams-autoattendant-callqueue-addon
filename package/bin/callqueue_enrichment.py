@@ -245,11 +245,15 @@ def convert_to_local_timezone(utc_dt, timezone_offset, logger=None):
     """
     Convert UTC datetime to local timezone.
 
-    Source: PowerQuery lines 337-429
+    Supports both:
+    1. Timezone names (e.g., "Australia/Sydney") - automatically handles DST
+    2. Legacy fixed offsets (e.g., "UTC+10:00") - for backward compatibility
+
+    Source: PowerQuery lines 337-429 (enhanced with auto DST support)
 
     Args:
         utc_dt (datetime): UTC datetime
-        timezone_offset (str): Timezone offset string (e.g., "UTC+10:00")
+        timezone_offset (str): Timezone name or offset string
         logger (logging.Logger, optional): Logger instance
 
     Returns:
@@ -263,38 +267,50 @@ def convert_to_local_timezone(utc_dt, timezone_offset, logger=None):
         return None
 
     try:
-        # Get the offset string
-        offset_str = TIMEZONE_OFFSETS.get(timezone_offset, "+00:00")
-        if timezone_offset not in TIMEZONE_OFFSETS:
-            logger.warning(f"Unknown timezone offset '{timezone_offset}', using UTC (+00:00)")
-
-        logger.debug(f"Converting {utc_dt} to timezone {timezone_offset} (offset: {offset_str})")
-
-        # Parse offset
-        if offset_str.startswith('+'):
-            sign = 1
-            offset_str = offset_str[1:]
+        # Detect format: timezone name contains "/", fixed offset does not
+        if "/" in timezone_offset:
+            # TIMEZONE NAME FORMAT (e.g., "Australia/Sydney")
+            # Automatically handles DST transitions
+            logger.debug(f"Using timezone name: {timezone_offset} (auto DST)")
+            tz = pytz.timezone(timezone_offset)
+            local_dt = utc_dt.astimezone(tz)
+            logger.debug(f"Converted {utc_dt} to {timezone_offset}: {local_dt} (offset: {local_dt.strftime('%z')})")
+            return local_dt
         else:
-            sign = -1
-            offset_str = offset_str[1:]
+            # LEGACY FIXED OFFSET FORMAT (e.g., "UTC+10:00")
+            # For backward compatibility with existing configurations
+            logger.debug(f"Using legacy fixed offset: {timezone_offset}")
 
-        # Split hours and minutes
-        if ':' in offset_str:
-            hours, minutes = offset_str.split(':')
-            hours = int(hours)
-            minutes = int(minutes)
-        else:
-            hours = int(offset_str)
-            minutes = 0
+            # Get the offset string
+            offset_str = TIMEZONE_OFFSETS.get(timezone_offset, "+00:00")
+            if timezone_offset not in TIMEZONE_OFFSETS:
+                logger.warning(f"Unknown timezone offset '{timezone_offset}', using UTC (+00:00)")
 
-        # Create timezone
-        total_minutes = sign * (hours * 60 + minutes)
-        tz = pytz.FixedOffset(total_minutes)
+            # Parse offset
+            if offset_str.startswith('+'):
+                sign = 1
+                offset_str = offset_str[1:]
+            else:
+                sign = -1
+                offset_str = offset_str[1:]
 
-        # Convert
-        local_dt = utc_dt.astimezone(tz)
-        logger.debug(f"Converted to local time: {local_dt}")
-        return local_dt
+            # Split hours and minutes
+            if ':' in offset_str:
+                hours, minutes = offset_str.split(':')
+                hours = int(hours)
+                minutes = int(minutes)
+            else:
+                hours = int(offset_str)
+                minutes = 0
+
+            # Create timezone
+            total_minutes = sign * (hours * 60 + minutes)
+            tz = pytz.FixedOffset(total_minutes)
+
+            # Convert
+            local_dt = utc_dt.astimezone(tz)
+            logger.debug(f"Converted to local time: {local_dt}")
+            return local_dt
     except Exception as e:
         logger.error(f"Failed to convert timezone for {utc_dt} with offset {timezone_offset}: {str(e)}")
         logger.warning("Returning UTC datetime as fallback")

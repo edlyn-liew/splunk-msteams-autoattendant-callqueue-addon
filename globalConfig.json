@@ -192,157 +192,109 @@
                         },
                         {
                             "type": "singleSelect",
-                            "label": "Timezone Offset",
+                            "label": "Timezone",
                             "field": "timezone_offset",
-                            "help": "Timezone for converting UTC timestamps to local time in enriched data.",
+                            "help": "Timezone for converting UTC timestamps to local time. Automatically handles daylight saving time where applicable.",
                             "required": true,
-                            "defaultValue": "UTC+10:00",
+                            "defaultValue": "Australia/Sydney",
                             "options": {
                                 "disableSearch": false,
                                 "autoCompleteFields": [
                                     {
                                         "value": "UTC",
-                                        "label": "UTC (+00:00)"
+                                        "label": "UTC (No Offset)"
                                     },
                                     {
-                                        "value": "UTC-12:00",
-                                        "label": "UTC-12:00"
+                                        "value": "Australia/Sydney",
+                                        "label": "Sydney (AEST/AEDT - Auto DST)"
                                     },
                                     {
-                                        "value": "UTC-11:00",
-                                        "label": "UTC-11:00"
+                                        "value": "Australia/Melbourne",
+                                        "label": "Melbourne (AEST/AEDT - Auto DST)"
                                     },
                                     {
-                                        "value": "UTC-10:00",
-                                        "label": "Hawaii (UTC-10:00)"
+                                        "value": "Australia/Brisbane",
+                                        "label": "Brisbane (AEST - No DST)"
                                     },
                                     {
-                                        "value": "UTC-09:00",
-                                        "label": "Alaska (UTC-09:00)"
+                                        "value": "Australia/Adelaide",
+                                        "label": "Adelaide (ACST/ACDT - Auto DST)"
                                     },
                                     {
-                                        "value": "UTC-08:00",
-                                        "label": "Pacific Time (UTC-08:00)"
+                                        "value": "Australia/Perth",
+                                        "label": "Perth (AWST - No DST)"
                                     },
                                     {
-                                        "value": "UTC-07:00",
-                                        "label": "Mountain Time (UTC-07:00)"
+                                        "value": "Australia/Hobart",
+                                        "label": "Hobart (AEST/AEDT - Auto DST)"
                                     },
                                     {
-                                        "value": "UTC-06:00",
-                                        "label": "Central Time (UTC-06:00)"
+                                        "value": "Australia/Darwin",
+                                        "label": "Darwin (ACST - No DST)"
                                     },
                                     {
-                                        "value": "UTC-05:00",
-                                        "label": "Eastern Time (UTC-05:00)"
+                                        "value": "Pacific/Auckland",
+                                        "label": "Auckland (NZST/NZDT - Auto DST)"
                                     },
                                     {
-                                        "value": "UTC-04:00",
-                                        "label": "Atlantic Time (UTC-04:00)"
+                                        "value": "America/New_York",
+                                        "label": "New York (EST/EDT - Auto DST)"
                                     },
                                     {
-                                        "value": "UTC-03:00",
-                                        "label": "UTC-03:00"
+                                        "value": "America/Chicago",
+                                        "label": "Chicago (CST/CDT - Auto DST)"
                                     },
                                     {
-                                        "value": "UTC-02:00",
-                                        "label": "UTC-02:00"
+                                        "value": "America/Denver",
+                                        "label": "Denver (MST/MDT - Auto DST)"
                                     },
                                     {
-                                        "value": "UTC-01:00",
-                                        "label": "UTC-01:00"
+                                        "value": "America/Los_Angeles",
+                                        "label": "Los Angeles (PST/PDT - Auto DST)"
                                     },
                                     {
-                                        "value": "UTC+01:00",
-                                        "label": "Central European (UTC+01:00)"
+                                        "value": "America/Anchorage",
+                                        "label": "Anchorage (AKST/AKDT - Auto DST)"
                                     },
                                     {
-                                        "value": "UTC+02:00",
-                                        "label": "Eastern European (UTC+02:00)"
+                                        "value": "Pacific/Honolulu",
+                                        "label": "Honolulu (HST - No DST)"
                                     },
                                     {
-                                        "value": "UTC+03:00",
-                                        "label": "UTC+03:00"
+                                        "value": "Europe/London",
+                                        "label": "London (GMT/BST - Auto DST)"
                                     },
                                     {
-                                        "value": "UTC+03:30",
-                                        "label": "Iran (UTC+03:30)"
+                                        "value": "Europe/Paris",
+                                        "label": "Paris (CET/CEST - Auto DST)"
                                     },
                                     {
-                                        "value": "UTC+04:00",
-                                        "label": "UTC+04:00"
+                                        "value": "Europe/Berlin",
+                                        "label": "Berlin (CET/CEST - Auto DST)"
                                     },
                                     {
-                                        "value": "UTC+04:30",
-                                        "label": "Afghanistan (UTC+04:30)"
+                                        "value": "Asia/Singapore",
+                                        "label": "Singapore (SGT - No DST)"
                                     },
                                     {
-                                        "value": "UTC+05:00",
-                                        "label": "UTC+05:00"
+                                        "value": "Asia/Tokyo",
+                                        "label": "Tokyo (JST - No DST)"
                                     },
                                     {
-                                        "value": "UTC+05:30",
-                                        "label": "India (UTC+05:30)"
+                                        "value": "Asia/Hong_Kong",
+                                        "label": "Hong Kong (HKT - No DST)"
                                     },
                                     {
-                                        "value": "UTC+05:45",
-                                        "label": "Nepal (UTC+05:45)"
+                                        "value": "Asia/Shanghai",
+                                        "label": "Shanghai (CST - No DST)"
                                     },
                                     {
-                                        "value": "UTC+06:00",
-                                        "label": "UTC+06:00"
+                                        "value": "Asia/Dubai",
+                                        "label": "Dubai (GST - No DST)"
                                     },
                                     {
-                                        "value": "UTC+06:30",
-                                        "label": "Myanmar (UTC+06:30)"
-                                    },
-                                    {
-                                        "value": "UTC+07:00",
-                                        "label": "Southeast Asia (UTC+07:00)"
-                                    },
-                                    {
-                                        "value": "UTC+08:00",
-                                        "label": "China/Singapore (UTC+08:00)"
-                                    },
-                                    {
-                                        "value": "UTC+08:45",
-                                        "label": "Eucla (UTC+08:45)"
-                                    },
-                                    {
-                                        "value": "UTC+09:00",
-                                        "label": "Japan/Korea (UTC+09:00)"
-                                    },
-                                    {
-                                        "value": "UTC+09:30",
-                                        "label": "Central Australia (UTC+09:30)"
-                                    },
-                                    {
-                                        "value": "UTC+10:00",
-                                        "label": "Eastern Australia (UTC+10:00)"
-                                    },
-                                    {
-                                        "value": "UTC+10:30",
-                                        "label": "Lord Howe Island (UTC+10:30)"
-                                    },
-                                    {
-                                        "value": "UTC+11:00",
-                                        "label": "Eastern Australia DST (UTC+11:00)"
-                                    },
-                                    {
-                                        "value": "UTC+12:00",
-                                        "label": "New Zealand (UTC+12:00)"
-                                    },
-                                    {
-                                        "value": "UTC+12:45",
-                                        "label": "Chatham Islands (UTC+12:45)"
-                                    },
-                                    {
-                                        "value": "UTC+13:00",
-                                        "label": "New Zealand DST (UTC+13:00)"
-                                    },
-                                    {
-                                        "value": "UTC+14:00",
-                                        "label": "Line Islands (UTC+14:00)"
+                                        "value": "Asia/Kolkata",
+                                        "label": "Mumbai/Delhi (IST - No DST)"
                                     }
                                 ]
                             }
@@ -460,7 +412,7 @@
     "meta": {
         "name": "splunk_msteams_aa_callqueue_reporting_addon",
         "restRoot": "splunk_msteams_aa_callqueue_reporting_addon",
-        "version": "1.0.3",
+        "version": "1.0.5",
         "displayName": "MSTeams Auto Attendant and Call Queue Reporting Add-on for Splunk",
         "schemaVersion": "0.0.10",
         "supportedThemes": [
