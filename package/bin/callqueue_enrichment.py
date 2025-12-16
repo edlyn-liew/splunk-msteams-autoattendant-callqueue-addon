@@ -526,9 +526,10 @@ def enrich_single_callqueue_record(record_data):
         enriched['CallQueue[rawPSTNTotalMinutes]'] = raw_record.get('PSTNTotalMinutes', 0)
         enriched['CallQueue[rawTotalCallCount]'] = raw_record.get('TotalCallCount', 1)
 
-        enriched['CallQueue[DocumentID]'] = raw_record.get('DocumentID', '')
-        enriched['CallQueue[ConferenceID]'] = raw_record.get('ConferenceID', '')
-        enriched['CallQueue[DialogID]'] = raw_record.get('DialogID', '')
+        # Common dimension identifiers (match API response casing)
+        enriched['CallQueue[DocumentId]'] = raw_record.get('DocumentId', '')
+        enriched['CallQueue[ConferenceId]'] = raw_record.get('ConferenceId', '')
+        enriched['CallQueue[DialogId]'] = raw_record.get('DialogId', '')
 
         # ====================================================================
         # STEP 2: Calculate CQTargetType (corrected)

@@ -39,6 +39,43 @@ def get_account_credentials(session_key: str, account_name: str):
     }
 
 
+def transform_ordered_arrays_to_dicts(array_data, dimensions, measurements):
+    """
+    Transform VAAC API ordered array responses to dictionary format.
+
+    The VAAC API returns data as ordered arrays where each element's position
+    corresponds to a field in the combined dimensions + measurements list.
+
+    Args:
+        array_data (list): List of arrays from VAAC dataResult
+        dimensions (list): List of dimension names (ordered as in API query)
+        measurements (list): List of measurement names (ordered as in API query)
+
+    Returns:
+        list: List of dictionaries with field names as keys
+
+    Example:
+        dimensions = ["UserStartTimeUTC", "CallQueueIdentity"]
+        measurements = ["TotalCallCount"]
+        array_data = [["2025-12-15T23:59:41", "CQ@example.com", 1]]
+
+        Returns: [{"UserStartTimeUTC": "2025-12-15T23:59:41",
+                   "CallQueueIdentity": "CQ@example.com",
+                   "TotalCallCount": 1}]
+    """
+    field_names = dimensions + measurements
+    transformed = []
+
+    for row in array_data:
+        record = {}
+        for idx, field_name in enumerate(field_names):
+            # Use None for missing values if array is shorter than expected
+            record[field_name] = row[idx] if idx < len(row) else None
+        transformed.append(record)
+
+    return transformed
+
+
 def get_oauth_token(logger: logging.Logger, email: str, password: str, tenant_id: str):
     """
     Authenticate using OAuth password grant flow and return access token.
@@ -104,9 +141,20 @@ def prepare_vaac_query(logger: logging.Logger, json_query: str):
         raise
 
 
-def get_vaac_analytics(logger: logging.Logger, credentials: dict, json_query: str):
+def get_vaac_analytics(logger: logging.Logger, credentials: dict, json_query: str,
+                        dimensions: list, measurements: list):
     """
     Call VAAC API with OAuth authentication and return analytics data.
+
+    Args:
+        logger: Logger instance
+        credentials: Dictionary with email, password, tenant_id
+        json_query: VAAC query JSON string
+        dimensions: Ordered list of dimension names for array transformation
+        measurements: Ordered list of measurement names for array transformation
+
+    Returns:
+        list: List of dictionaries with field names as keys
     """
     logger.info("Fetching VAAC analytics data")
 
@@ -142,11 +190,19 @@ def get_vaac_analytics(logger: logging.Logger, credentials: dict, json_query: st
         # Extract dataResult if it exists
         if "dataResult" in data:
             result_data = data["dataResult"]
-            logger.info(f"Successfully retrieved {len(result_data) if isinstance(result_data, list) else 1} records from VAAC API")
-            return result_data if isinstance(result_data, list) else [result_data]
+            logger.info(f"Successfully retrieved {len(result_data) if isinstance(result_data, list) else 1} array records from VAAC API")
+
+            # Transform ordered arrays to dictionaries
+            if isinstance(result_data, list) and len(result_data) > 0:
+                logger.info(f"Transforming {len(result_data)} ordered array records to dictionary format")
+                transformed_data = transform_ordered_arrays_to_dicts(result_data, dimensions, measurements)
+                logger.info(f"Successfully transformed {len(transformed_data)} records")
+                return transformed_data
+            else:
+                return []
         else:
-            logger.info("Successfully retrieved data from VAAC API")
-            return [data]
+            logger.warning("No dataResult in VAAC API response")
+            return []
     except requests.exceptions.RequestException as e:
         logger.error(f"VAAC API call failed: {str(e)}")
         raise
@@ -163,7 +219,11 @@ def construct_vaac_query(logger: logging.Logger, input_item: dict, checkpoint_he
         input_name: Normalized input name for checkpoint key
 
     Returns:
-        tuple: (JSON string ready for VAAC API, end_date_iso for checkpoint)
+        tuple: (query_json, end_date_iso, dimensions_list, measurements_list)
+            - query_json: JSON string ready for VAAC API
+            - end_date_iso: ISO datetime for checkpoint storage
+            - dimensions_list: Ordered list of dimension names (for array transformation)
+            - measurements_list: Ordered list of measurement names (for array transformation)
     """
     from datetime import datetime, timedelta, timezone
 
@@ -181,7 +241,7 @@ def construct_vaac_query(logger: logging.Logger, input_item: dict, checkpoint_he
     measurements_list = get_measurements_for_report_type(report_type, include_optional=False, logger=logger)
     query["Measurements"] = [{"DataModelName": m} for m in measurements_list]
 
-    # Handle Date Filters with checkpoint support
+    # Handle Date and Time Filters with checkpoint support
     # Get current time (UTC, timezone-aware)
     end_date_dt = datetime.now(timezone.utc)
     end_date = end_date_dt.strftime("%Y-%m-%d")
@@ -200,31 +260,40 @@ def construct_vaac_query(logger: logging.Logger, input_item: dict, checkpoint_he
         except Exception as e:
             logger.warning(f"Failed to retrieve checkpoint for '{input_name}': {str(e)}")
 
-    # Determine start_date
+    # Determine start_date and start_datetime
     if last_checkpoint:
         # Use checkpoint as start date (incremental mode)
         start_date_dt = datetime.fromisoformat(last_checkpoint)
         start_date = start_date_dt.strftime("%Y-%m-%d")
-        logger.info(f"Using checkpoint start date: {start_date} (incremental mode)")
+        start_datetime_iso = last_checkpoint  # ISO format for UserStartTimeUTC filter
+        logger.info(f"Using checkpoint start datetime: {start_datetime_iso} (incremental mode)")
     else:
         # Fallback to interval-based (first run or checkpoint failure)
         interval_seconds = int(input_item.get("interval", 3600))
         start_date_dt = end_date_dt - timedelta(seconds=interval_seconds)
         start_date = start_date_dt.strftime("%Y-%m-%d")
-        logger.info(f"No checkpoint found for '{input_name}', using interval-based start date: {start_date} (lookback: {interval_seconds}s)")
+        start_datetime_iso = start_date_dt.isoformat()  # ISO format for UserStartTimeUTC filter
+        logger.info(f"No checkpoint found for '{input_name}', using interval-based start datetime: {start_datetime_iso} (lookback: {interval_seconds}s)")
 
     logger.info(f"Query date range: {start_date} to {end_date}")
+    logger.info(f"Query datetime range: {start_datetime_iso} to {end_date_iso}")
 
+    # Build filters with both UserStartTimeUTC (for precise time filtering) and Date (for day boundaries)
     query["Filters"] = [
+        {
+            "DataModelName": "UserStartTimeUTC",
+            "Value": start_datetime_iso,
+            "Operand": 4  # Greater than or equal (>=)
+        },
         {
             "DataModelName": "Date",
             "Value": start_date,
-            "Operand": 4  # Greater than or equal
+            "Operand": 4  # Greater than or equal (>=)
         },
         {
             "DataModelName": "Date",
             "Value": end_date,
-            "Operand": 6  # Less than or equal
+            "Operand": 6  # Less than or equal (<=)
         }
     ]
 
@@ -237,7 +306,8 @@ def construct_vaac_query(logger: logging.Logger, input_item: dict, checkpoint_he
         "UserAgent": "Splunk Add-on for MS Teams AA/CQ Reporting"
     }
 
-    return json.dumps(query), end_date_iso
+    # Return query JSON, checkpoint datetime, and dimension/measurement lists for array transformation
+    return json.dumps(query), end_date_iso, dimensions_list, measurements_list
 
 
 def validate_input(definition: smi.ValidationDefinition):
@@ -284,13 +354,19 @@ def stream_events(inputs: smi.InputDefinition, event_writer: smi.EventWriter):
 
             # Construct JSON query from structured fields with checkpoint support
             logger.info("Constructing VAAC query from input fields")
-            json_query, end_date_iso = construct_vaac_query(logger, input_item, checkpoint_helper, normalized_input_name)
+            json_query, end_date_iso, dimensions_list, measurements_list = construct_vaac_query(
+                logger, input_item, checkpoint_helper, normalized_input_name
+            )
             logger.debug(f"Constructed query: {json_query}")
             logger.debug(f"Query end date (for checkpoint): {end_date_iso}")
+            logger.debug(f"Dimensions ({len(dimensions_list)}): {', '.join(dimensions_list[:5])}...")
+            logger.debug(f"Measurements ({len(measurements_list)}): {', '.join(measurements_list)}")
 
             # Fetch VAAC Analytics data
             logger.info("Processing VAAC Analytics input")
-            raw_data = get_vaac_analytics(logger, credentials, json_query)
+            raw_data = get_vaac_analytics(
+                logger, credentials, json_query, dimensions_list, measurements_list
+            )
 
             # Get report type for enrichment
             report_type = input_item.get("report_type", "call_queue")

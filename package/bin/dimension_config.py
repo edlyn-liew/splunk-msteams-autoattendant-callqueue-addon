@@ -13,6 +13,14 @@ import logging
 # Auto Attendant Dimensions
 # These dimensions capture data about Auto Attendant call flows and routing
 AUTO_ATTENDANT_DIMENSIONS = [
+    # Common dimensions (must be first for ordered array mapping)
+    "DocumentId",                         # Call identifier
+    "ConferenceId",                       # Call identifier
+    "DialogId",                           # Call identifier
+    "UserStartTimeUTC",                   # Time call started (UTC)
+    "EndTime",                            # Time call ended (UTC)
+    "Date",                               # Date of call (UTC)
+    # Auto Attendant specific dimensions
     "AutoAttendantIdentity",              # Resource account URI
     "AutoAttendantCallFlow",              # Call flow states
     "AutoAttendantCallResult",            # Final call outcomes
@@ -30,6 +38,14 @@ AUTO_ATTENDANT_DIMENSIONS = [
 # Call Queue Dimensions
 # These dimensions capture data about Call Queue operations and outcomes
 CALL_QUEUE_DIMENSIONS = [
+    # Common dimensions (must be first for ordered array mapping)
+    "DocumentId",                         # Call identifier
+    "ConferenceId",                       # Call identifier
+    "DialogId",                           # Call identifier
+    "UserStartTimeUTC",                   # Time call started (UTC)
+    "EndTime",                            # Time call ended (UTC)
+    "Date",                               # Date of call (UTC)
+    # Call Queue specific dimensions
     "CallQueueIdentity",                  # Resource account URI
     "CallQueueAgentCount",                # Number of agents in queue
     "CallQueueAgentOptInCount",           # Number of opted-in agents
