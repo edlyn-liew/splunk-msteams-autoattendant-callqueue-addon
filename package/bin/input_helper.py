@@ -82,7 +82,7 @@ def get_oauth_token(logger: logging.Logger, email: str, password: str, tenant_id
     """
     logger.info(f"Authenticating with OAuth for tenant: {tenant_id}")
 
-    oauth_url = f"https://login.microsoftonline.com/{tenant_id}/oauth2/token"
+    oauth_url = f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
     client_id = "a672d62c-fc7b-4e81-a576-e60dc46e951d"
 
     payload = {

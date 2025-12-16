@@ -412,7 +412,7 @@
     "meta": {
         "name": "splunk_msteams_aa_callqueue_reporting_addon",
         "restRoot": "splunk_msteams_aa_callqueue_reporting_addon",
-        "version": "1.0.7",
+        "version": "1.0.8",
         "displayName": "MSTeams Auto Attendant and Call Queue Reporting Add-on for Splunk",
         "schemaVersion": "0.0.10",
         "supportedThemes": [
