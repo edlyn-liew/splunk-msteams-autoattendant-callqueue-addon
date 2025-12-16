@@ -198,7 +198,7 @@ On first run, the add-on uses interval-based lookback. Subsequent runs use the c
 
 ### Call Queue Enriched Fields
 
-The add-on adds 40+ enriched fields to each Call Queue record:
+The add-on adds 40+ enriched fields to each Call Queue record. This enrichment utilises the logic from VAAC API in PowerBI M code PowerQuery, which is converted to Python. 
 
 **Identifiers:**
 - `CallQueue[DocumentId]`, `CallQueue[ConferenceId]`, `CallQueue[DialogId]`
