@@ -9,6 +9,13 @@ import requests
 from solnlib import conf_manager, log
 from splunklib import modularinput as smi
 
+# Import dimension configuration
+from dimension_config import get_dimensions_for_report_type, get_measurements_for_report_type
+
+# Import enrichment modules
+from callqueue_enrichment import enrich_callqueue_data
+from autoattendant_enrichment import enrich_autoattendant_data
+
 
 ADDON_NAME = "splunk_msteams_aa_callqueue_reporting_addon"
 
@@ -160,20 +167,16 @@ def construct_vaac_query(logger: logging.Logger, input_item: dict):
 
     query = {}
 
-    # Handle Dimensions
-    dimensions_str = input_item.get("dimensions", "")
-    if dimensions_str:
-        dimensions_list = [d.strip() for d in dimensions_str.split(",") if d.strip()]
-        query["Dimensions"] = [{"DataModelName": dim} for dim in dimensions_list]
-    else:
-        query["Dimensions"] = []
+    # Get report type (auto_attendant or call_queue)
+    report_type = input_item.get("report_type", "call_queue")
+    logger.info(f"Constructing VAAC query for report type: {report_type}")
 
-    # Handle Measurements (required)
-    measurements_str = input_item.get("measurements", "")
-    if not measurements_str:
-        raise ValueError("At least one measurement must be selected")
+    # Get hardcoded dimensions for the selected report type
+    dimensions_list = get_dimensions_for_report_type(report_type, logger=logger)
+    query["Dimensions"] = [{"DataModelName": dim} for dim in dimensions_list]
 
-    measurements_list = [m.strip() for m in measurements_str.split(",") if m.strip()]
+    # Get hardcoded measurements for the selected report type
+    measurements_list = get_measurements_for_report_type(report_type, include_optional=False, logger=logger)
     query["Measurements"] = [{"DataModelName": m} for m in measurements_list]
 
     # Handle Date Filters - always use interval-based mode
@@ -249,11 +252,40 @@ def stream_events(inputs: smi.InputDefinition, event_writer: smi.EventWriter):
 
             # Fetch VAAC Analytics data
             logger.info("Processing VAAC Analytics input")
-            data = get_vaac_analytics(logger, credentials, json_query)
-            sourcetype = "msteams:vaac:analytics"
+            raw_data = get_vaac_analytics(logger, credentials, json_query)
 
-            # Write events to Splunk
-            for line in data:
+            # Get report type for enrichment
+            report_type = input_item.get("report_type", "call_queue")
+
+            # Prepare enrichment configuration
+            enrichment_config = {
+                'timezone_offset': input_item.get('timezone_offset', 'UTC'),
+                'language_code': input_item.get('language_code', 'en-AU'),
+                'parallel_workers': int(input_item.get('parallel_workers', 4)),
+                'enable_legend_codes': True,
+                'enable_legend_strings': True,
+                'enable_timezone_conversion': True
+            }
+            logger.debug(f"Enrichment config: parallel_workers={enrichment_config['parallel_workers']}, "
+                        f"timezone={enrichment_config['timezone_offset']}")
+
+            # Apply enrichment based on report type
+            logger.info(f"Applying {report_type} enrichment to {len(raw_data)} records")
+            if report_type == "call_queue":
+                enriched_data = enrich_callqueue_data(raw_data, enrichment_config, logger=logger)
+                sourcetype = "msteams:vaac:callqueue"
+            elif report_type == "auto_attendant":
+                enriched_data = enrich_autoattendant_data(raw_data, enrichment_config, logger=logger)
+                sourcetype = "msteams:vaac:autoattendant"
+            else:
+                # Fallback: no enrichment
+                logger.warning(f"Unknown report type '{report_type}', skipping enrichment")
+                enriched_data = raw_data
+                sourcetype = "msteams:vaac:analytics"
+
+            # Write enriched events to Splunk
+            logger.info(f"Writing {len(enriched_data)} enriched events to Splunk")
+            for line in enriched_data:
                 event_writer.write_event(
                     smi.Event(
                         data=json.dumps(line, ensure_ascii=False, default=str),
@@ -266,7 +298,7 @@ def stream_events(inputs: smi.InputDefinition, event_writer: smi.EventWriter):
                 logger,
                 input_name,
                 sourcetype,
-                len(data),
+                len(enriched_data),
                 input_item.get("index"),
                 account=input_item.get("account"),
             )

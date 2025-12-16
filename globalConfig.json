@@ -162,294 +162,213 @@
                         },
                         {
                             "field": "vaac_dimensions_doc_help_link",
-                            "label": "Dimension Help Link",
+                            "label": "Documentation Help Link",
                             "type": "helpLink",
                             "options": {
-                                "text": "Microsoft Teams VAAC Dimensions Documentation",
-                                "link": "https://learn.microsoft.com/en-us/microsoftteams/aa-cq-cqd-historical-reports#auto-attendant-dimensions"
+                                "text": "Microsoft Teams VAAC Dimensions & Measurements Documentation",
+                                "link": "https://learn.microsoft.com/en-us/microsoftteams/aa-cq-cqd-historical-reports"
                             }
                         },
                         {
-                            "type": "checkboxTree",
-                            "label": "Dimensions",
-                            "field": "dimensions",
-                            "required": false,
+                            "type": "singleSelect",
+                            "label": "Report Type",
+                            "field": "report_type",
+                            "help": "Select whether to report on Auto Attendant or Call Queue data. Dimensions and measurements are automatically configured for the selected type.",
+                            "required": true,
+                            "defaultValue": "call_queue",
                             "options": {
-                                "groups": [
+                                "items": [
                                     {
-                                        "label": "Auto Attendant Dimensions",
-                                        "options": {
-                                            "isExpandable": true,
-                                            "expand": false
-                                        },
-                                        "fields": [
-                                            "AutoAttendantIdentity",
-                                            "AutoAttendantCallFlow",
-                                            "AutoAttendantCallResult",
-                                            "AutoAttendantCallerActionCounts",
-                                            "AutoAttendantChainDurationInSecs",
-                                            "AutoAttendantChainIndex",
-                                            "AutoAttendantChainStartTime",
-                                            "AutoAttendantCount",
-                                            "AutoAttendantDirectorySearchMethod",
-                                            "AutoAttendantId",
-                                            "AutoAttendantTransferAction",
-                                            "HasAA"
-                                        ]
+                                        "value": "call_queue",
+                                        "label": "Call Queue"
                                     },
                                     {
-                                        "label": "Call Queue Dimensions",
-                                        "options": {
-                                            "isExpandable": true,
-                                            "expand": false
-                                        },
-                                        "fields": [
-                                            "CallQueueIdentity",
-                                            "CallQueueAgentCount",
-                                            "CallQueueAgentOptInCount",
-                                            "CallQueueCallResult",
-                                            "CallQueueDurationSeconds",
-                                            "CallQueueFinalStateAction",
-                                            "CallQueueId",
-                                            "CallQueueTargetType",
-                                            "HasCQ",
-                                            "TransferredFromCQId",
-                                            "TransferredFromCallQueueIdentity"
-                                        ]
-                                    }
-                                ],
-                                "rows": [
-                                    {
-                                        "field": "AutoAttendantIdentity",
-                                        "checkbox": {
-                                            "label": "AutoAttendantIdentity - Resource account URI",
-                                            "defaultValue": true
-                                        }
-                                    },
-                                    {
-                                        "field": "AutoAttendantCallFlow",
-                                        "checkbox": {
-                                            "label": "AutoAttendantCallFlow - Call flow states"
-                                        }
-                                    },
-                                    {
-                                        "field": "AutoAttendantCallResult",
-                                        "checkbox": {
-                                            "label": "AutoAttendantCallResult - Final call outcomes"
-                                        }
-                                    },
-                                    {
-                                        "field": "AutoAttendantCallerActionCounts",
-                                        "checkbox": {
-                                            "label": "AutoAttendantCallerActionCounts - Number of caller actions"
-                                        }
-                                    },
-                                    {
-                                        "field": "AutoAttendantChainDurationInSecs",
-                                        "checkbox": {
-                                            "label": "AutoAttendantChainDurationInSecs - Call flow duration"
-                                        }
-                                    },
-                                    {
-                                        "field": "AutoAttendantChainIndex",
-                                        "checkbox": {
-                                            "label": "AutoAttendantChainIndex - Call chain segment index"
-                                        }
-                                    },
-                                    {
-                                        "field": "AutoAttendantChainStartTime",
-                                        "checkbox": {
-                                            "label": "AutoAttendantChainStartTime - Call flow start time"
-                                        }
-                                    },
-                                    {
-                                        "field": "AutoAttendantCount",
-                                        "checkbox": {
-                                            "label": "AutoAttendantCount - Number of AAs traversed"
-                                        }
-                                    },
-                                    {
-                                        "field": "AutoAttendantDirectorySearchMethod",
-                                        "checkbox": {
-                                            "label": "AutoAttendantDirectorySearchMethod - Search method"
-                                        }
-                                    },
-                                    {
-                                        "field": "AutoAttendantId",
-                                        "checkbox": {
-                                            "label": "AutoAttendantId - AA GUID"
-                                        }
-                                    },
-                                    {
-                                        "field": "AutoAttendantTransferAction",
-                                        "checkbox": {
-                                            "label": "AutoAttendantTransferAction - Transfer target type"
-                                        }
-                                    },
-                                    {
-                                        "field": "HasAA",
-                                        "checkbox": {
-                                            "label": "HasAA - Is AA involved in call"
-                                        }
-                                    },
-                                    {
-                                        "field": "CallQueueIdentity",
-                                        "checkbox": {
-                                            "label": "CallQueueIdentity - Resource account URI",
-                                            "defaultValue": true
-                                        }
-                                    },
-                                    {
-                                        "field": "CallQueueAgentCount",
-                                        "checkbox": {
-                                            "label": "CallQueueAgentCount - Number of agents in queue"
-                                        }
-                                    },
-                                    {
-                                        "field": "CallQueueAgentOptInCount",
-                                        "checkbox": {
-                                            "label": "CallQueueAgentOptInCount - Number of opted-in agents"
-                                        }
-                                    },
-                                    {
-                                        "field": "CallQueueCallResult",
-                                        "checkbox": {
-                                            "label": "CallQueueCallResult - Final call state"
-                                        }
-                                    },
-                                    {
-                                        "field": "CallQueueDurationSeconds",
-                                        "checkbox": {
-                                            "label": "CallQueueDurationSeconds - Duration in queue"
-                                        }
-                                    },
-                                    {
-                                        "field": "CallQueueFinalStateAction",
-                                        "checkbox": {
-                                            "label": "CallQueueFinalStateAction - Final action"
-                                        }
-                                    },
-                                    {
-                                        "field": "CallQueueId",
-                                        "checkbox": {
-                                            "label": "CallQueueId - Call Queue GUID"
-                                        }
-                                    },
-                                    {
-                                        "field": "CallQueueTargetType",
-                                        "checkbox": {
-                                            "label": "CallQueueTargetType - Call redirection target"
-                                        }
-                                    },
-                                    {
-                                        "field": "HasCQ",
-                                        "checkbox": {
-                                            "label": "HasCQ - Is CQ involved in call"
-                                        }
-                                    },
-                                    {
-                                        "field": "TransferredFromCQId",
-                                        "checkbox": {
-                                            "label": "TransferredFromCQId - Source queue GUID"
-                                        }
-                                    },
-                                    {
-                                        "field": "TransferredFromCallQueueIdentity",
-                                        "checkbox": {
-                                            "label": "TransferredFromCallQueueIdentity - Source queue URI"
-                                        }
+                                        "value": "auto_attendant",
+                                        "label": "Auto Attendant"
                                     }
                                 ]
                             }
                         },
                         {
-                            "field": "vaac_measurement_doc_helplink",
-                            "label": "Measurement Help Link",
-                            "type": "helpLink",
+                            "type": "singleSelect",
+                            "label": "Timezone Offset",
+                            "field": "timezone_offset",
+                            "help": "Timezone for converting UTC timestamps to local time in enriched data.",
+                            "required": true,
+                            "defaultValue": "UTC+10:00",
                             "options": {
-                                "text": "Microsoft Teams VAAC Measurements Documentation",
-                                "link": "https://learn.microsoft.com/en-us/microsoftteams/aa-cq-cqd-historical-reports#measurements"
+                                "items": [
+                                    {
+                                        "value": "UTC",
+                                        "label": "UTC (+00:00)"
+                                    },
+                                    {
+                                        "value": "UTC-12:00",
+                                        "label": "UTC-12:00"
+                                    },
+                                    {
+                                        "value": "UTC-11:00",
+                                        "label": "UTC-11:00"
+                                    },
+                                    {
+                                        "value": "UTC-10:00",
+                                        "label": "Hawaii (UTC-10:00)"
+                                    },
+                                    {
+                                        "value": "UTC-09:00",
+                                        "label": "Alaska (UTC-09:00)"
+                                    },
+                                    {
+                                        "value": "UTC-08:00",
+                                        "label": "Pacific Time (UTC-08:00)"
+                                    },
+                                    {
+                                        "value": "UTC-07:00",
+                                        "label": "Mountain Time (UTC-07:00)"
+                                    },
+                                    {
+                                        "value": "UTC-06:00",
+                                        "label": "Central Time (UTC-06:00)"
+                                    },
+                                    {
+                                        "value": "UTC-05:00",
+                                        "label": "Eastern Time (UTC-05:00)"
+                                    },
+                                    {
+                                        "value": "UTC-04:00",
+                                        "label": "Atlantic Time (UTC-04:00)"
+                                    },
+                                    {
+                                        "value": "UTC-03:00",
+                                        "label": "UTC-03:00"
+                                    },
+                                    {
+                                        "value": "UTC-02:00",
+                                        "label": "UTC-02:00"
+                                    },
+                                    {
+                                        "value": "UTC-01:00",
+                                        "label": "UTC-01:00"
+                                    },
+                                    {
+                                        "value": "UTC+01:00",
+                                        "label": "Central European (UTC+01:00)"
+                                    },
+                                    {
+                                        "value": "UTC+02:00",
+                                        "label": "Eastern European (UTC+02:00)"
+                                    },
+                                    {
+                                        "value": "UTC+03:00",
+                                        "label": "UTC+03:00"
+                                    },
+                                    {
+                                        "value": "UTC+03:30",
+                                        "label": "Iran (UTC+03:30)"
+                                    },
+                                    {
+                                        "value": "UTC+04:00",
+                                        "label": "UTC+04:00"
+                                    },
+                                    {
+                                        "value": "UTC+04:30",
+                                        "label": "Afghanistan (UTC+04:30)"
+                                    },
+                                    {
+                                        "value": "UTC+05:00",
+                                        "label": "UTC+05:00"
+                                    },
+                                    {
+                                        "value": "UTC+05:30",
+                                        "label": "India (UTC+05:30)"
+                                    },
+                                    {
+                                        "value": "UTC+05:45",
+                                        "label": "Nepal (UTC+05:45)"
+                                    },
+                                    {
+                                        "value": "UTC+06:00",
+                                        "label": "UTC+06:00"
+                                    },
+                                    {
+                                        "value": "UTC+06:30",
+                                        "label": "Myanmar (UTC+06:30)"
+                                    },
+                                    {
+                                        "value": "UTC+07:00",
+                                        "label": "Southeast Asia (UTC+07:00)"
+                                    },
+                                    {
+                                        "value": "UTC+08:00",
+                                        "label": "China/Singapore (UTC+08:00)"
+                                    },
+                                    {
+                                        "value": "UTC+08:45",
+                                        "label": "Eucla (UTC+08:45)"
+                                    },
+                                    {
+                                        "value": "UTC+09:00",
+                                        "label": "Japan/Korea (UTC+09:00)"
+                                    },
+                                    {
+                                        "value": "UTC+09:30",
+                                        "label": "Central Australia (UTC+09:30)"
+                                    },
+                                    {
+                                        "value": "UTC+10:00",
+                                        "label": "Eastern Australia (UTC+10:00)"
+                                    },
+                                    {
+                                        "value": "UTC+10:30",
+                                        "label": "Lord Howe Island (UTC+10:30)"
+                                    },
+                                    {
+                                        "value": "UTC+11:00",
+                                        "label": "Eastern Australia DST (UTC+11:00)"
+                                    },
+                                    {
+                                        "value": "UTC+12:00",
+                                        "label": "New Zealand (UTC+12:00)"
+                                    },
+                                    {
+                                        "value": "UTC+12:45",
+                                        "label": "Chatham Islands (UTC+12:45)"
+                                    },
+                                    {
+                                        "value": "UTC+13:00",
+                                        "label": "New Zealand DST (UTC+13:00)"
+                                    },
+                                    {
+                                        "value": "UTC+14:00",
+                                        "label": "Line Islands (UTC+14:00)"
+                                    }
+                                ]
                             }
                         },
                         {
-                            "type": "checkboxTree",
-                            "label": "Measurements",
-                            "field": "measurements",
+                            "type": "singleSelect",
+                            "label": "Parallel Workers",
+                            "field": "parallel_workers",
+                            "help": "Number of parallel workers for data enrichment. Higher values process records faster but use more CPU. Use 1 for sequential processing.",
                             "required": false,
+                            "defaultValue": "4",
                             "options": {
-                                "groups": [
+                                "items": [
                                     {
-                                        "label": "Auto Attendant Measurements",
-                                        "options": {
-                                            "isExpandable": true,
-                                            "expand": false
-                                        },
-                                        "fields": [
-                                            "AvgAutoAttendantChainDurationSeconds"
-                                        ]
+                                        "value": "1",
+                                        "label": "1 (Sequential - No Parallelization)"
                                     },
                                     {
-                                        "label": "Call Queue Measurements",
-                                        "options": {
-                                            "isExpandable": true,
-                                            "expand": false
-                                        },
-                                        "fields": [
-                                            "AvgCallDuration",
-                                            "AvgCallQueueDurationSeconds"
-                                        ]
+                                        "value": "2",
+                                        "label": "2 Workers"
                                     },
                                     {
-                                        "label": "General Measurements",
-                                        "options": {
-                                            "isExpandable": true,
-                                            "expand": false
-                                        },
-                                        "fields": [
-                                            "PSTNTotalMinutes",
-                                            "TotalCallCount",
-                                            "TotalAudioStreamDuration"
-                                        ]
-                                    }
-                                ],
-                                "rows": [
-                                    {
-                                        "field": "AvgAutoAttendantChainDurationSeconds",
-                                        "checkbox": {
-                                            "label": "AvgAutoAttendantChainDurationSeconds - Avg AA call flow duration"
-                                        }
+                                        "value": "4",
+                                        "label": "4 Workers (Recommended)"
                                     },
                                     {
-                                        "field": "AvgCallDuration",
-                                        "checkbox": {
-                                            "label": "AvgCallDuration - Avg total call duration"
-                                        }
-                                    },
-                                    {
-                                        "field": "AvgCallQueueDurationSeconds",
-                                        "checkbox": {
-                                            "label": "AvgCallQueueDurationSeconds - Avg queue duration"
-                                        }
-                                    },
-                                    {
-                                        "field": "PSTNTotalMinutes",
-                                        "checkbox": {
-                                            "label": "PSTNTotalMinutes - Total PSTN call minutes",
-                                            "defaultValue": true
-                                        }
-                                    },
-                                    {
-                                        "field": "TotalCallCount",
-                                        "checkbox": {
-                                            "label": "TotalCallCount - Total number of calls",
-                                            "defaultValue": true
-                                        }
-                                    },
-                                    {
-                                        "field": "TotalAudioStreamDuration",
-                                        "checkbox": {
-                                            "label": "TotalAudioStreamDuration - Total audio stream duration"
-                                        }
+                                        "value": "8",
+                                        "label": "8 Workers (High Performance)"
                                     }
                                 ]
                             }
