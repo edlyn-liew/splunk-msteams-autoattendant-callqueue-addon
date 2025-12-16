@@ -2,3 +2,4 @@ splunktaucclib
 splunk-sdk
 solnlib
 requests
+pytz

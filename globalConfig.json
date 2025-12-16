@@ -177,7 +177,8 @@
                             "required": true,
                             "defaultValue": "call_queue",
                             "options": {
-                                "items": [
+                                "disableSearch": true,
+                                "autoCompleteFields": [
                                     {
                                         "value": "call_queue",
                                         "label": "Call Queue"
@@ -197,7 +198,8 @@
                             "required": true,
                             "defaultValue": "UTC+10:00",
                             "options": {
-                                "items": [
+                                "disableSearch": false,
+                                "autoCompleteFields": [
                                     {
                                         "value": "UTC",
                                         "label": "UTC (+00:00)"
@@ -353,7 +355,8 @@
                             "required": false,
                             "defaultValue": "4",
                             "options": {
-                                "items": [
+                                "disableSearch": true,
+                                "autoCompleteFields": [
                                     {
                                         "value": "1",
                                         "label": "1 (Sequential - No Parallelization)"
@@ -457,7 +460,7 @@
     "meta": {
         "name": "splunk_msteams_aa_callqueue_reporting_addon",
         "restRoot": "splunk_msteams_aa_callqueue_reporting_addon",
-        "version": "1.0.2",
+        "version": "1.0.3",
         "displayName": "MSTeams Auto Attendant and Call Queue Reporting Add-on for Splunk",
         "schemaVersion": "0.0.10",
         "supportedThemes": [
