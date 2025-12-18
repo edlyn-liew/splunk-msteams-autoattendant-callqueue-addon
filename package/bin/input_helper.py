@@ -154,7 +154,7 @@ def build_query_payload():
     json_object = {
         "Filters": [
             {"DataModelName": "UserStartTimeUTC", "Value": "2025-12-15T23:58:30", "Operand": 5},  # Greater Than or Equal To
-            {"DataModelName": "Date", "Value": "2025-12-15", "Operand": 0}  # equal
+            {"DataModelName": "Date", "Value": "2025-12-15", "Operand": 0}, # equal
             {"DataModelName": "Date", "Value": "2025-12-16", "Operand": 6}  # equal
             # equals True
         ],
