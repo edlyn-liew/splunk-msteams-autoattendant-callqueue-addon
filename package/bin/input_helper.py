@@ -127,7 +127,7 @@ def prepare_vaac_query(logger: logging.Logger, json_query: str):
 
     try:
         #temporary
-        json_str = json.dumps(json_query, separators=(",", ":"), ensure_ascii=False)
+        json_query = json.dumps(json_query, separators=(",", ":"), ensure_ascii=False)
         # GZIP compress
         compressed = gzip.compress(json_query.encode('utf-8'))
         logger.debug(f"Compressed query size: {len(compressed)} bytes")
