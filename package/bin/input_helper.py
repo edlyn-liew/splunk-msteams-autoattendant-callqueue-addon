@@ -3,6 +3,8 @@ import logging
 import gzip
 import base64
 import urllib.parse
+import datetime as dt
+
 
 import import_declare_test
 import requests
@@ -140,7 +142,39 @@ def prepare_vaac_query(logger: logging.Logger, json_query: str):
         logger.error(f"Failed to prepare VAAC query: {str(e)}")
         raise
 
-
+ 
+def build_query_payload():
+    """
+    Build the VAAC query payload to return only calls started in the last 1 hour.
+    Uses `UserStartTimeUTC >= <now-1h>` for precise time filtering.
+    """
+    # Compute "now minus 1 hour" in UTC and format as ISO 8601 ending with Z
+    from_utc = (dt.datetime.now(dt.timezone.utc) - dt.timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
+ 
+    json_object = {
+        "Filters": [
+            {"DataModelName": "UserStartTimeUTC", "Value": "2025-12-15T23:58:30", "Operand": 5},  # Greater Than or Equal To
+            {"DataModelName": "Date", "Value": "2025-12-15", "Operand": 0}  # equal
+            {"DataModelName": "Date", "Value": "2025-12-16", "Operand": 6}  # equal
+            # equals True
+        ],
+        "Dimensions": [
+            {"DataModelName": "UserStartTimeUTC"},
+            {"DataModelName": "HasCQ"},
+            {"DataModelName": "CallQueueCallResult"},
+            {"DataModelName": "CallQueueIdentity"},
+        ],
+        "Measurements": [
+            {"DataModelName": "TotalCallCount"},
+            {"DataModelName": "AvgCallDuration"},
+            {"DataModelName": "TotalAudioStreamDuration"},
+        ],
+        "Parameters": {"UserAgent": "Power BI Desktop V3.1.8"},
+        "LimitResultRowsCount": 90000,
+    }
+    return json_object
+ 
+ 
 def get_vaac_analytics(logger: logging.Logger, credentials: dict, json_query: str,
                         dimensions: list, measurements: list):
     """
@@ -167,12 +201,13 @@ def get_vaac_analytics(logger: logging.Logger, credentials: dict, json_query: st
     )
 
     # Prepare the query
-    encoded_query = prepare_vaac_query(logger, json_query)
+    #temproary
+    payload = build_query_payload()
+    encoded_query = prepare_vaac_query(logger, payload)
 
     # Construct API URL
     api_endpoint = "https://api.interfaces.records.teams.microsoft.com/Teams.VoiceAnalytics/getanalytics"
     api_url = f"{api_endpoint}?query={encoded_query}"
-
     # Set headers
     headers = {
         "Authorization": f"Bearer {access_token}",

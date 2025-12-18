@@ -55,7 +55,7 @@ CALL_QUEUE_DIMENSIONS = [
     "CallQueueId",                        # Call Queue GUID
     "CallQueueTargetType",                # Call redirection target
     "HasCQ",                              # Is CQ involved in call
-    "TransferredFromCQId",                # Source queue GUID (if transferred)
+    "TransferredFromCallQueueId",                # Source queue GUID (if transferred)
     "TransferredFromCallQueueIdentity"    # Source queue URI (if transferred)
 ]
 
